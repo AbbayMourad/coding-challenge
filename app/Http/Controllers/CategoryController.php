@@ -19,6 +19,11 @@ class CategoryController extends Controller
         return $this->categoryService->createMany($categoriesData);
     }
 
+    public function destroy(Request $request) {
+        $id = $request->route('category');
+        return $this->categoryService->delete([ 'id' => $id ]);
+    }
+
     private function rules(): array
     {
         return [
