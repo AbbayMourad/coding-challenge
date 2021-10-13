@@ -34,6 +34,13 @@ class ProductController extends Controller
         return $this->productService->delete(['id' => $id]);
     }
 
+    public function index(Request $request) {
+        $query = $request->query();
+        $conditions = [];
+        if (isset($query['category'])) $conditions['category'] = $query['category'];
+        return $this->productService->getMany($conditions, $query);
+    }
+
     private function rules(): array {
         return [
             'product.name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
