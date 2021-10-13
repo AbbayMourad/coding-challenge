@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function __construct(ProductService $productService) {
         $this->productService = $productService;
     }
-    
+
     public function store(Request $request, CategoryController $categoryController) {
         // validate
         $request->validate($this->rules());
@@ -27,6 +27,11 @@ class ProductController extends Controller
         $input = $request->input();
         $product = $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
         return response($product);
+    }
+
+    public function destroy(Request $request) {
+        $id = $request->route('product');
+        return $this->productService->delete(['id' => $id]);
     }
 
     private function rules(): array {
