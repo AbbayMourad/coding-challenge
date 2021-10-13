@@ -16,4 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource("products", ProductController::class)->only(['index', 'store']);
+// destroy action should not be here, just for now
+Route::apiResource("products", ProductController::class)->only(['index', 'store', 'destroy']);
+
+// should not be here (accessible via console), just for now
+Route::apiResource("categories", CategoryController::class)->only(['store', 'destroy']);
