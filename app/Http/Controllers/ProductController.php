@@ -44,7 +44,7 @@ class ProductController extends Controller
     private function rules(): array {
         return [
             'product.name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
-            'product.description' => 'nullable|max:255|regex:/^[a-z0-9- ]*$/i',
+            'product.description' => 'nullable|max:255|regex:/^[a-z0-9-\' ]*$/i',
             'product.price' => 'required|numeric|min:0',
             'categories' => 'nullable|array'
         ];
