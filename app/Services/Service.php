@@ -27,7 +27,7 @@ abstract class Service implements IService
         return $this->repository->get($conditions);
     }
 
-    public function getMany(array $conditions, array $options = []) {
+    public function getMany(array $conditions = [], array $options = []) {
         return $this->repository->getMany($conditions, $options);
     }
 

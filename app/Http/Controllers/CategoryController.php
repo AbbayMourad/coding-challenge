@@ -24,6 +24,10 @@ class CategoryController extends Controller
         return $this->categoryService->delete([ 'id' => $id ]);
     }
 
+    public function index(Request $request) {
+        return $this->categoryService->getMany();
+    }
+
     private function rules(): array
     {
         return [

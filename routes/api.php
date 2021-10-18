@@ -20,4 +20,4 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource("products", ProductController::class)->only(['index', 'store', 'destroy']);
 
 // should not be here (accessible via console), just for now
-Route::apiResource("categories", CategoryController::class)->only(['store', 'destroy']);
+Route::apiResource("categories", CategoryController::class)->only(['store', 'destroy', 'index']);
