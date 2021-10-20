@@ -34,7 +34,8 @@ class ProductController extends Controller
 
         //create product
         $input = $request->input();
-        return $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
+        $product = $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
+        return new ProductResource($product);
     }
 
     public function destroy(Request $request) {
@@ -46,7 +47,8 @@ class ProductController extends Controller
         $query = $request->query();
         $conditions = [];
         if (isset($query['category'])) $conditions['category'] = $query['category'];
-        return $this->productService->getMany($conditions, $query);
+        $products = $this->productService->getMany($conditions, $query);
+        return ProductResource::collection($products);
     }
 
     private function rules(): array {
