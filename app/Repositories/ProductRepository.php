@@ -14,6 +14,7 @@ class ProductRepository extends Repository
 
     public function create(array $models) {
         $product = $models['product'];
+        $product->image = $product->image->getContent();
         $product->save();
         $categories = $models['categories'];
         foreach ($categories as $category)  $product->categories()->attach($category->id);
@@ -24,7 +25,7 @@ class ProductRepository extends Repository
         if (isset($conditions['category'])) {
             $query = Category::where('name', $conditions['category'])->firstOrFail()->products();
         } else {
-            $query = Product::where($conditions)->with('categories');
+            $query = Product::where($conditions);
         }
         // filter sort options
         $orderBys = $this->filterSortOptions($options);
