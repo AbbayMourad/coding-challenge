@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ProductController extends Controller
 {
@@ -14,6 +18,11 @@ class ProductController extends Controller
     }
 
     public function store(Request $request, CategoryController $categoryController) {
+        // convert product image from base64 to file
+        $product = $request->input('product');
+        $product['image'] = $this->base64ToFile($product['image'] ?? '');
+        $request->merge(['product' => $product]);
+
         // validate
         $request->validate($this->rules());
 
@@ -25,8 +34,7 @@ class ProductController extends Controller
 
         //create product
         $input = $request->input();
-        $product = $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
-        return response($product);
+        return $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
     }
 
     public function destroy(Request $request) {
@@ -46,6 +54,7 @@ class ProductController extends Controller
             'product.name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
             'product.description' => 'nullable|max:255|regex:/^[a-z0-9-\' ]*$/i',
             'product.price' => 'required|numeric|min:0',
+            'product.image' => 'required|file|image|max:1024', // 1MB
             'categories' => 'nullable|array'
         ];
     }
@@ -57,5 +66,26 @@ class ProductController extends Controller
             array_push($result, ['name' => $categoryName]);
         }
         return $result;
+    }
+
+    private function base64ToFile($base64): UploadedFile
+    {
+        // decode the base64 file
+        $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
+
+        // save it to temporary dir first.
+        $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
+        file_put_contents($tmpFilePath, $fileData);
+
+        // this just to help us get file info.
+        $tmpFile = new File($tmpFilePath);
+
+        return new UploadedFile(
+            $tmpFile->getPathname(),
+            $tmpFile->getFilename(),
+            $tmpFile->getMimeType(),
+            0,
+            true // Mark it as test, since the file isn't from real HTTP POST.
+        );
     }
 }
