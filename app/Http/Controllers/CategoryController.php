@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,8 @@ class CategoryController extends Controller
     public function store(Request $request) {
         $request->validate($this->rules());
         $categoriesData = $request->input("categories");
-        return $this->categoryService->createMany($categoriesData);
+        $categories = $this->categoryService->createMany($categoriesData);
+        return CategoryResource::collection($categories);
     }
 
     public function destroy(Request $request) {
@@ -25,7 +27,8 @@ class CategoryController extends Controller
     }
 
     public function index(Request $request) {
-        return $this->categoryService->getMany();
+        $categories = $this->categoryService->getMany();
+        return CategoryResource::collection($categories);
     }
 
     private function rules(): array
