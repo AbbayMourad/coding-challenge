@@ -32,7 +32,8 @@ class ProductRepository extends Repository
         foreach ($orderBys as $field => $order) {
             $query->orderBy($field, $order);
         }
-        return $query->get();
+        // 5 products per page
+        return $query->paginate(5);
     }
 
 
