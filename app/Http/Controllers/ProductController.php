@@ -18,13 +18,8 @@ class ProductController extends Controller
     }
 
     public function store(Request $request, CategoryController $categoryController) {
-        // convert product image from base64 to file
-        $product = $request->input('product');
-        $product['image'] = $this->base64ToFile($product['image'] ?? '');
-        $request->merge(['product' => $product]);
-
         // validate
-        $request->validate($this->rules());
+        $this->validateProduct($request);
 
         // handle categories creation if needed
         $categoriesNames = $request->input("categories", []);
@@ -49,6 +44,21 @@ class ProductController extends Controller
         if (isset($query['category'])) $conditions['category'] = $query['category'];
         $products = $this->productService->getMany($conditions, $query);
         return ProductResource::collection($products);
+    }
+
+    private function validateProduct($request) {
+        // convert product image from base64 to file (for validation)
+        $product = $request->input('product');
+        $productBase64Image = $product['image'];
+        $product['image'] = $this->base64ToFile($productBase64Image ?? '');
+        $request->merge(['product' => $product]);
+
+        // validate
+        $request->validate($this->rules());
+
+        // set product image back to base64 format
+        $product['image'] = $productBase64Image;
+        $request->merge(['product' => $product]);
     }
 
     private function rules(): array {
