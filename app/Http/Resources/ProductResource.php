@@ -19,13 +19,8 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'image' => $this->getImage(),
+            'image' => $this->image,
             'categories' => CategoryResource::collection($this->categories)
         ];
-    }
-
-    // convert product image to a valid base64 format
-    private function getImage(): string {
-        return 'data:image;base64,'.base64_encode($this->image);
     }
 }

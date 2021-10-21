@@ -14,7 +14,7 @@ class AddImageColumnToProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->binary("image");
+            $table->longText("image");
         });
     }
 

@@ -14,8 +14,8 @@ class ProductRepository extends Repository
 
     public function create(array $models) {
         $product = $models['product'];
-        $product->image = $product->image->getContent();
         $product->save();
+
         $categories = $models['categories'];
         foreach ($categories as $category)  $product->categories()->attach($category->id);
         return $product;
