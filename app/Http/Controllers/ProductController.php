@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
-use Symfony\Component\HttpFoundation\File\File;
 
 class ProductController extends Controller
 {
@@ -17,10 +15,7 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function store(Request $request, CategoryController $categoryController) {
-        // validate
-        $this->validateProduct($request);
-
+    public function store(StoreProductRequest $request, CategoryController $categoryController) {
         // handle categories creation if needed
         $categoriesNames = $request->input("categories", []);
         $categories = $this->toCategories($categoriesNames);
@@ -46,31 +41,6 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    private function validateProduct($request) {
-        // convert product image from base64 to file (for validation)
-        $product = $request->input('product');
-        $productBase64Image = $product['image'];
-        $product['image'] = $this->base64ToFile($productBase64Image ?? '');
-        $request->merge(['product' => $product]);
-
-        // validate
-        $request->validate($this->rules());
-
-        // set product image back to base64 format
-        $product['image'] = $productBase64Image;
-        $request->merge(['product' => $product]);
-    }
-
-    private function rules(): array {
-        return [
-            'product.name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
-            'product.description' => 'nullable|max:255|regex:/^[a-z0-9-\' ]*$/i',
-            'product.price' => 'required|numeric|min:0',
-            'product.image' => 'required|file|image|max:1024', // 1MB
-            'categories' => 'nullable|array'
-        ];
-    }
-
     private function toCategories(array $categoriesNames): array
     {
         $result = [];
@@ -78,26 +48,5 @@ class ProductController extends Controller
             array_push($result, ['name' => $categoryName]);
         }
         return $result;
-    }
-
-    private function base64ToFile($base64): UploadedFile
-    {
-        // decode the base64 file
-        $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
-
-        // save it to temporary dir first.
-        $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
-        file_put_contents($tmpFilePath, $fileData);
-
-        // this just to help us get file info.
-        $tmpFile = new File($tmpFilePath);
-
-        return new UploadedFile(
-            $tmpFile->getPathname(),
-            $tmpFile->getFilename(),
-            $tmpFile->getMimeType(),
-            0,
-            true // Mark it as test, since the file isn't from real HTTP POST.
-        );
     }
 }
