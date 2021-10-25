@@ -2,64 +2,29 @@
 
 namespace App\Repositories;
 
-abstract class Repository implements IRepository
+abstract class Repository
 {
-    protected string $modelName;
-
-    public function __construct(string $modelName, string $modelsPrefix = 'App\Models') {
-        $this->modelName = $modelsPrefix."\\".$modelName;
-    }
-
-    public function get(array $conditions) {
-        return $this->modelName::where($conditions)->first();
-    }
-
-    public function getMany(array $conditions, array $options)
+    protected function filterData(array $data): array
     {
-        return $this->modelName::where($conditions)->get();
+        return array_filter($data, function ($field) {
+            return $this->isAllowedField($field);
+        }, ARRAY_FILTER_USE_KEY);
     }
 
-    public function getOrCreate(array $conditions, array $options = []) {
-        return $this->modelName::firstOrCreate($conditions, $options['extra'] ?? []);
-    }
-
-    public function create(array $models) {
-        $model = $models[0];
-        $model->save();
-        return $model;
-    }
-
-    public function createMany(array $data) {
-        $models = [];
-        foreach ($data as $values) {
-            $model = new $this->modelName($values);
-            $model->save();
-            array_push($models, $model);
-        }
-        return $models;
-    }
-
-    public function delete(array $conditions)
+    protected function isAllowedField($field): bool
     {
-        $model = $this->modelName::where($conditions)->firstOrFail();
-        $model->delete();
-        return $model;
+        return in_array($field, $this->allowedFields);
     }
 
-    public function getModelName(): string
+    protected function isSortableField($field): bool
     {
-        return $this->modelName;
+        return in_array($field, $this->sortableFields);
     }
 
-    protected function filterSortOptions(array $options): array
+    protected function filterSortOptions($sortOptions): array
     {
-        $result = [];
-        foreach ($this->modelName::getSortableFields() as $field) {
-            if (!isset($options["sort-$field"])) continue;
-            $result[$field] = $options["sort-$field"];
-        }
-        return $result;
+        return array_filter($sortOptions, function ($field) {
+            return $this->isSortableField($field);
+        }, ARRAY_FILTER_USE_KEY);
     }
-
-
 }
