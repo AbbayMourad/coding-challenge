@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class AddImageColumnToProductsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
@@ -18,12 +13,7 @@ class AddImageColumnToProductsTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn("image");

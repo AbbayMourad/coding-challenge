@@ -7,26 +7,17 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCategoriesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string("name", 50);
-            $table->foreignIdFor(Category::class, "parent_id")->nullable();
+            $table->string('name', 50);
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('categories')->nullOnDelete();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('categories');
