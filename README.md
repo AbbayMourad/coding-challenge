@@ -1,6 +1,6 @@
 # coding-challenge
 
-##### Important note: as of Thu, 14 Oct 2021 00:49:12 +01:00, I only built the REST API, I am still working on the CLI and the Web parts 
+##### Important note: as of Mon, 25 Oct 2021 18:53:12 +01:00, I built the REST API and the web part, I am still working on the CLI. 
 
 ## Code Architucture
 ### Data Layer
