@@ -2,35 +2,48 @@
 
 namespace App\Services;
 
-use App\Models\Category;
+use App\Http\Requests\StoreCategoryRequest;
 use App\Repositories\CategoryRepository;
+use Illuminate\Support\Facades\Validator;
 
-class CategoryService extends Service
+class CategoryService
 {
+    private CategoryRepository $categoryRepository;
 
     public function __construct(CategoryRepository $categoryRepository) {
-        parent::__construct($categoryRepository);
+        $this->categoryRepository = $categoryRepository;
     }
 
-    public function createMany(array $data): array
+    private function create(array $categoryData)
     {
-        $categories = [];
-        foreach ($data as $value) {
-            $category = $this->create($value);
-            array_push($categories, $category);
-        }
-        return $categories;
-    }
-
-    public function create(array $data, array $models = [])
-    {
-        $category = $this->repository->get(['name' => $data['name']]);
+        $category = $this->categoryRepository->get(['name' => $categoryData['name']]);
         if ($category) return $category;
 
-        if (isset($data['parent'])) {
-            $models['parent'] = $this->repository->getOrCreate([ 'name' => $data['parent'] ]);
+        $parentCategory = null;
+        if (isset($categoryData['parent'])) {
+            $parentCategory = $this->categoryRepository
+                ->getOrCreate(['name' => $categoryData['parent']], ['name' => $categoryData['parent']]);
         }
-        $models['category'] = new Category(['name' => $data['name']]);
-        return $this->repository->create($models);
+        return $this->categoryRepository->create($categoryData, $parentCategory);
+    }
+
+    public function createMany(array $categoriesData)
+    {
+        Validator::make(['categories' => $categoriesData], (new StoreCategoryRequest())->rules())->validate();
+
+        $categoriesModels = [];
+        foreach ($categoriesData as $categoryData) {
+            $category = $this->create($categoryData);
+            array_push($categoriesModels, $category);
+        }
+        return collect($categoriesModels);
+    }
+
+    public function getMany(array $conditions = []) {
+        return $this->categoryRepository->getMany($conditions);
+    }
+
+    public function delete($id) {
+        return $this->categoryRepository->delete($id);
     }
 }
