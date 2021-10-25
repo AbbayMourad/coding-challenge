@@ -15,17 +15,12 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function store(StoreProductRequest $request, CategoryController $categoryController) {
-        // handle categories creation if needed
-        $categoriesNames = $request->input("categories", []);
-        $categories = $this->toCategories($categoriesNames);
-        $request->merge(['categories' => $categories]);
-        $categories = $categoryController->store($request);
-
-        //create product
+    public function store(StoreProductRequest $request) {
         $input = $request->input();
-        $product = $this->productService->create(['product' => $input['product']], ['categories' => $categories]);
-        return new ProductResource($product);
+        $productData = $input['product'];
+        $categoriesNames = $input['categories'];
+        return $product = $this->productService->create($productData, $categoriesNames);
+//        return new ProductResource($product);
     }
 
     public function destroy(Request $request) {
@@ -35,18 +30,9 @@ class ProductController extends Controller
 
     public function index(Request $request) {
         $query = $request->query();
-        $conditions = [];
-        if (isset($query['category'])) $conditions['category'] = $query['category'];
-        $products = $this->productService->getMany($conditions, $query);
-        return ProductResource::collection($products);
-    }
-
-    private function toCategories(array $categoriesNames): array
-    {
-        $result = [];
-        foreach ($categoriesNames as $categoryName) {
-            array_push($result, ['name' => $categoryName]);
-        }
-        return $result;
+        $categoryName = $query['category'] ?? null;
+        $sortOptions = $query['sort'] ?? [];
+        return $products = $this->productService->getMany($categoryName, $sortOptions);
+//        return ProductResource::collection($products);
     }
 }
