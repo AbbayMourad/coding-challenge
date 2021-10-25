@@ -1,6 +1,10 @@
 <template>
   <div>
     <h1>Products List</h1>
+     <!-- form -->
+    <div id="search-form">
+      <product-search-form @product-search="onSearch" />
+    </div>
     <div v-if="isProductsExists">
       <products-list :products="products" />
     </div>
@@ -14,12 +18,13 @@
 <script>
 import ProductsList from "../components/ProductsList.vue";
 import SimplePaginator from "../components/SimplePaginator.vue";
+import ProductSearchForm from "../components/ProductSearchForm.vue";
 export default {
-  components: { ProductsList, SimplePaginator },
+  components: { ProductsList, SimplePaginator, ProductSearchForm },
   data: () => ({
     products: [],
     links: {},
-    params: { page: 1 },
+    params: { page: 1, category: undefined },
   }),
   computed: {
     isProductsExists() {
@@ -63,6 +68,10 @@ export default {
       if (disabled) return;
       const page = this.links[label].match(/page=(\d+)/)[1];
       this.params.page = page;
+    },
+    onSearch(searchData) {
+      console.log("--search-data", searchData);
+      this.params.category = searchData.category;
     },
   },
 };
