@@ -36,7 +36,7 @@ class CategoryService
             $category = $this->create($categoryData);
             array_push($categoriesModels, $category);
         }
-        return collect($categoriesModels);
+        return $categoriesModels;
     }
 
     public function getMany(array $conditions = []) {
