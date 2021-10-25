@@ -32,7 +32,7 @@ class ProductController extends Controller
         $query = $request->query();
         $categoryName = $query['category'] ?? null;
         $sortOptions = $query['sort'] ?? [];
-        return $products = $this->productService->getMany($categoryName, $sortOptions);
-//        return ProductResource::collection($products);
+        $products = $this->productService->getMany($categoryName, $sortOptions);
+        return ProductResource::collection($products);
     }
 }

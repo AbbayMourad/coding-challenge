@@ -27,7 +27,7 @@ class CategoryController extends Controller
     }
 
     public function index(Request $request) {
-        return $categories = $this->categoryService->getMany();
-//        return CategoryResource::collection($categories);
+        $categories = $this->categoryService->getMany();
+        return CategoryResource::collection($categories);
     }
 }
