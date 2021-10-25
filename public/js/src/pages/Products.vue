@@ -6,6 +6,9 @@
       <product-search-form @product-search="onSearch" />
     </div>
     <div v-if="isProductsExists">
+      <div class="sort-by">
+        <sort-by :sortOptions="sortOptions" @sort="onSort" />
+      </div>
       <products-list :products="products" />
     </div>
     <p v-else class="not-found-mess">No Product Found !</p>
@@ -19,12 +22,19 @@
 import ProductsList from "../components/ProductsList.vue";
 import SimplePaginator from "../components/SimplePaginator.vue";
 import ProductSearchForm from "../components/ProductSearchForm.vue";
+import SortBy from "../components/SortBy.vue";
 export default {
-  components: { ProductsList, SimplePaginator, ProductSearchForm },
+  components: { ProductsList, SimplePaginator, ProductSearchForm, SortBy },
   data: () => ({
     products: [],
     links: {},
-    params: { page: 1, category: undefined },
+    params: { page: 1, category: undefined, sort: {}},
+    sortOptions: [
+      { text: "Price: Low to High", value: { price: "asc" } },
+      { text: "Price: High to Low", value: { price: "desc" } },
+      { text: "Name: A-Z", value: { name: "asc" } },
+      { text: "Name: Z-A", value: { name: "desc" } },
+    ],
   }),
   computed: {
     isProductsExists() {
@@ -72,6 +82,10 @@ export default {
     onSearch(searchData) {
       console.log("--search-data", searchData);
       this.params.category = searchData.category;
+    },
+    onSort(selectedSort) {
+      console.log("--selected-sort", selectedSort);
+      this.params.sort = selectedSort;
     },
   },
 };
