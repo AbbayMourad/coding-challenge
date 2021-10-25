@@ -2,40 +2,52 @@
 
 namespace App\Repositories;
 
-
-use App\Models\Category;
-use App\Models\Product;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends Repository
 {
-    public function __construct() {
-        parent::__construct('Product');
-    }
+    private string $table = 'products';
 
-    public function create(array $models) {
-        $product = $models['product'];
-        $product->save();
+    protected array $allowedFields = ['name', 'description', 'price', 'image'];
 
-        $categories = $models['categories'];
-        foreach ($categories as $category)  $product->categories()->attach($category->id);
-        return $product;
-    }
+    protected array $sortableFields = ['name', 'price'];
 
-    public function getMany(array $conditions, array $options) {
-        if (isset($conditions['category'])) {
-            $query = Category::where('name', $conditions['category'])->firstOrFail()->products();
-        } else {
-            $query = Product::where($conditions);
+    private int $perPage = 5;
+
+    public function create(array $productData, Collection $categories)
+    {
+        $productData = $this->filterData($productData);
+        $id = DB::table($this->table)->insertGetId($productData);
+
+        $association = [];
+        foreach ($categories as $category) {
+            array_push($association, ['category_id' => $category->id, 'product_id' => $id]);
         }
-        // filter sort options
-        $orderBys = $this->filterSortOptions($options);
-        foreach ($orderBys as $field => $order) {
-            $query->orderBy($field, $order);
-        }
-        // 5 products per page
-        return $query->paginate(5);
+        DB::table('category_product')->insert($association);
+
+        return $this->get(['id' => $id]);
     }
 
+    public function get(array $conditions) {
+        return DB::table($this->table)->where($conditions)->first();
+    }
 
+    public function getMany($categoryName, array $sortOptions)
+    {
+        $query = DB::table($this->table);
+        if ($categoryName) {
+            $query
+                ->join('category_product', 'products.id', '=', 'product_id')
+                ->join('categories', 'categories.id', '=', 'category_id')
+                ->where('categories.name', '=', $categoryName);
+        }
+        $sortOptions = $this->filterSortOptions($sortOptions);
+        foreach ($sortOptions as $field => $order)   $query->orderBy($field, $order);
+        return $query->get('products.*');
+    }
 
+    public function delete($id) {
+        return DB::table($this->table)->delete(['id' => $id]);
+    }
 }
