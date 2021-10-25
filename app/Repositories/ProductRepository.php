@@ -15,7 +15,7 @@ class ProductRepository extends Repository
 
     private int $perPage = 5;
 
-    public function create(array $productData, Collection $categories)
+    public function create(array $productData, array $categories)
     {
         $productData = $this->filterData($productData);
         $id = DB::table($this->table)->insertGetId($productData);
@@ -44,7 +44,7 @@ class ProductRepository extends Repository
         }
         $sortOptions = $this->filterSortOptions($sortOptions);
         foreach ($sortOptions as $field => $order)   $query->orderBy($field, $order);
-        return $query->get('products.*');
+        return $query->paginate($this->perPage, 'products.*');
     }
 
     public function delete($id) {
