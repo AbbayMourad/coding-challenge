@@ -11,7 +11,7 @@ class StoreCategoryRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public static function rules(): array
     {
         return [
             'categories' => 'array',

@@ -10,11 +10,12 @@ class CategoryService
 {
     private CategoryRepository $categoryRepository;
 
-    public function __construct(CategoryRepository $categoryRepository) {
+    public function __construct(CategoryRepository $categoryRepository)
+    {
         $this->categoryRepository = $categoryRepository;
     }
 
-    private function create(array $categoryData)
+    public function create(array $categoryData)
     {
         $category = $this->categoryRepository->get(['name' => $categoryData['name']]);
         if ($category) return $category;
@@ -29,7 +30,7 @@ class CategoryService
 
     public function createMany(array $categoriesData)
     {
-        Validator::make(['categories' => $categoriesData], (new StoreCategoryRequest())->rules())->validate();
+        Validator::make(['categories' => $categoriesData], StoreCategoryRequest::rules())->validate();
 
         $categoriesModels = [];
         foreach ($categoriesData as $categoryData) {
@@ -39,11 +40,13 @@ class CategoryService
         return $categoriesModels;
     }
 
-    public function getMany(array $conditions = []) {
+    public function getMany(array $conditions = [])
+    {
         return $this->categoryRepository->getMany($conditions);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         return $this->categoryRepository->delete($id);
     }
 }
