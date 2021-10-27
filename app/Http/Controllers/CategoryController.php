@@ -19,8 +19,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $categoriesData = $request->input("categories");
-        return $categories = $this->categoryService->createMany($categoriesData);
-//        return CategoryResource::collection($categories);
+        $categories = $this->categoryService->createMany($categoriesData);
+        return CategoryResource::collection($categories);
     }
 
     public function destroy(Request $request)
