@@ -21,8 +21,8 @@ class ProductController extends Controller
         $input = $request->input();
         $productData = $input['product'];
         $categoriesNames = $input['categories'];
-        return $product = $this->productService->create($productData, $categoriesNames);
-//        return new ProductResource($product);
+        $product = $this->productService->create($productData, $categoriesNames);
+        return new ProductResource($product);
     }
 
     public function destroy(Request $request)
