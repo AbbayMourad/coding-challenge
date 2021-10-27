@@ -1,7 +1,5 @@
 # coding-challenge
 
-##### Important note: as of Mon, 25 Oct 2021 18:53:12 +01:00, I built the REST API and the web part, I am still working on the CLI. 
-
 ## Code Architucture
 ### Data Layer
 In data layer we have an interface **IRepository** that represents what a repository can do.
