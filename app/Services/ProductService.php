@@ -13,7 +13,8 @@ class ProductService
 
     private CategoryService $categoryService;
 
-    public function __construct(ProductRepository $productRepository, CategoryService $categoryService) {
+    public function __construct(ProductRepository $productRepository, CategoryService $categoryService)
+    {
         $this->productRepository = $productRepository;
         $this->categoryService = $categoryService;
     }
@@ -31,7 +32,8 @@ class ProductService
         return $this->productRepository->getMany($categoryName, $sortOptions);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         return $this->productRepository->delete($id);
     }
 }

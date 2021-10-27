@@ -19,11 +19,13 @@ class CategoryRepository extends Repository
         return $this->get(['id' => $id]);
     }
 
-    public function get(array $conditions) {
+    public function get(array $conditions)
+    {
         return DB::table($this->table)->where($conditions)->first();
     }
 
-    public function getOrCreate(array $conditions, array $categoryData) {
+    public function getOrCreate(array $conditions, array $categoryData)
+    {
         $category = $this->get($conditions);
         if ($category)  return $category;
         return $this->create($categoryData);
@@ -34,7 +36,8 @@ class CategoryRepository extends Repository
         return DB::table($this->table)->where($conditions)->get();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         return DB::table($this->table)->where(['id' => $id])->delete();
     }
 }

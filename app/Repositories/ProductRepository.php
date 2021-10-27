@@ -29,7 +29,8 @@ class ProductRepository extends Repository
         return $this->get(['id' => $id]);
     }
 
-    public function get(array $conditions) {
+    public function get(array $conditions)
+    {
         return DB::table($this->table)->where($conditions)->first();
     }
 
@@ -47,7 +48,8 @@ class ProductRepository extends Repository
         return $query->paginate($this->perPage, 'products.*');
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         return DB::table($this->table)->delete(['id' => $id]);
     }
 }
