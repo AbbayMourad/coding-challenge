@@ -4,21 +4,17 @@ namespace App\Utils;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\File\File;
 
-class Base64
+class FileCreator
 {
-    public static function toFile(string $base64): UploadedFile
+    public static function fromString(string $content): UploadedFile
     {
-        // decode the base64 file
-        $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
-
         // save it to temporary dir first.
         $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
-        file_put_contents($tmpFilePath, $fileData);
+        file_put_contents($tmpFilePath, $content);
 
         // this just to help us get file info.
-        $tmpFile = new File($tmpFilePath);
+        $tmpFile = new \Symfony\Component\HttpFoundation\File\File($tmpFilePath);
 
         return new UploadedFile(
             $tmpFile->getPathname(),
@@ -27,5 +23,12 @@ class Base64
             0,
             true // Mark it as test, since the file isn't from real HTTP POST.
         );
+    }
+
+    public static function fromBase64(string $base64): UploadedFile
+    {
+        // decode the base64 file
+        $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
+        return self::fromString($fileData);
     }
 }

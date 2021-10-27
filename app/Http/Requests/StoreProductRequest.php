@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Utils\Base64;
+use App\Utils\FileCreator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
@@ -16,7 +17,7 @@ class StoreProductRequest extends FormRequest
     {
         $product = $this->input('product');
         $product['base64Image'] = $product['image'];
-        $product['image'] = Base64::toFile($product['image'] ?? '');
+        $product['image'] = FileCreator::fromBase64($product['image'] ?? '');
         $this->merge(['product' => $product]);
     }
 
@@ -28,7 +29,7 @@ class StoreProductRequest extends FormRequest
         $this->merge(['product' => $product]);
     }
 
-    public function rules(): array
+    public static function rules(): array
     {
         return [
             'product.name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
