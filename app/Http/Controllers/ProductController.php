@@ -16,7 +16,7 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
         $input = $request->input();
         $productData = $input['product'];
