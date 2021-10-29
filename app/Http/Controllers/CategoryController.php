@@ -20,18 +20,21 @@ class CategoryController extends Controller
     {
         $categoriesData = $request->input("categories");
         $categories = $this->categoryService->createMany($categoriesData);
+
         return CategoryResource::collection($categories);
     }
 
     public function destroy(Request $request)
     {
         $id = $request->route('category');
+
         return $this->categoryService->delete($id);
     }
 
     public function index(Request $request)
     {
         $categories = $this->categoryService->getMany();
+
         return CategoryResource::collection($categories);
     }
 }

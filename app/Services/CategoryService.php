@@ -18,17 +18,20 @@ class CategoryService
     public function create(array $categoryData)
     {
         $category = $this->categoryRepository->get(['name' => $categoryData['name']]);
-        if ($category) return $category;
+        if ($category) {
+            return $category;
+        }
 
         $parentCategory = null;
         if (isset($categoryData['parent'])) {
             $parentCategory = $this->categoryRepository
                 ->getOrCreate(['name' => $categoryData['parent']], ['name' => $categoryData['parent']]);
         }
+
         return $this->categoryRepository->create($categoryData, $parentCategory);
     }
 
-    public function createMany(array $categoriesData)
+    public function createMany(array $categoriesData): array
     {
         Validator::make(['categories' => $categoriesData], StoreCategoryRequest::rules())->validate();
 
@@ -37,6 +40,7 @@ class CategoryService
             $category = $this->create($categoryData);
             array_push($categoriesModels, $category);
         }
+
         return $categoriesModels;
     }
 

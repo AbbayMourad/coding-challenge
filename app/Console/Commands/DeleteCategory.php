@@ -21,6 +21,7 @@ class DeleteCategory extends Command
         $id = $this->argument("id");
         $categoryService->delete($id);
         $this->info("category deleted successfully");
+
         return 0;
     }
 }

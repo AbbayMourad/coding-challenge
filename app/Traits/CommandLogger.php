@@ -2,8 +2,6 @@
 
 namespace App\Traits;
 
-use phpDocumentor\Reflection\Types\Iterable_;
-
 trait CommandLogger
 {
     private function logErrors(string $info, Iterable $errors)
@@ -20,6 +18,7 @@ trait CommandLogger
         foreach ($this->loggableFields as $field) {
             array_push($out, $field."=".$model->$field);
         }
+
         return join(", ", $out);
     }
 

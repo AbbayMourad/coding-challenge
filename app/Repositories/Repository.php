@@ -6,9 +6,11 @@ abstract class Repository
 {
     protected function filterData(array $data): array
     {
-        return array_filter($data, function ($field) {
+        $isAllowedField = function ($field) {
             return $this->isAllowedField($field);
-        }, ARRAY_FILTER_USE_KEY);
+        };
+
+        return array_filter($data, $isAllowedField, ARRAY_FILTER_USE_KEY);
     }
 
     protected function isAllowedField($field): bool
@@ -23,8 +25,10 @@ abstract class Repository
 
     protected function filterSortOptions($sortOptions): array
     {
-        return array_filter($sortOptions, function ($field) {
+        $isSortableField = function ($field) {
             return $this->isSortableField($field);
-        }, ARRAY_FILTER_USE_KEY);
+        };
+
+        return array_filter($sortOptions, $isSortableField, ARRAY_FILTER_USE_KEY);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Utils\Base64;
 use App\Utils\FileCreator;
 use Illuminate\Foundation\Http\FormRequest;
 

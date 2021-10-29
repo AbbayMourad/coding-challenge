@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\File\File;
 
 class FileCreator
 {
@@ -14,21 +15,21 @@ class FileCreator
         file_put_contents($tmpFilePath, $content);
 
         // this just to help us get file info.
-        $tmpFile = new \Symfony\Component\HttpFoundation\File\File($tmpFilePath);
+        $tmpFile = new File($tmpFilePath);
 
         return new UploadedFile(
             $tmpFile->getPathname(),
             $tmpFile->getFilename(),
             $tmpFile->getMimeType(),
             0,
-            true // Mark it as test, since the file isn't from real HTTP POST.
+            true
         );
     }
 
     public static function fromBase64(string $base64): UploadedFile
     {
-        // decode the base64 file
         $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
+
         return self::fromString($fileData);
     }
 }

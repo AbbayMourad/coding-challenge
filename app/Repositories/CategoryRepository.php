@@ -14,8 +14,11 @@ class CategoryRepository extends Repository
     public function create(array $categoryData, $parentCategory = null)
     {
         $categoryData = $this->filterData($categoryData);
-        if ($parentCategory) $categoryData['parent_id'] = $parentCategory->id;
+        if ($parentCategory) {
+            $categoryData['parent_id'] = $parentCategory->id;
+        }
         $id = DB::table($this->table)->insertGetId($categoryData);
+
         return $this->get(['id' => $id]);
     }
 
@@ -27,7 +30,10 @@ class CategoryRepository extends Repository
     public function getOrCreate(array $conditions, array $categoryData)
     {
         $category = $this->get($conditions);
-        if ($category)  return $category;
+        if ($category)  {
+            return $category;
+        }
+
         return $this->create($categoryData);
     }
 

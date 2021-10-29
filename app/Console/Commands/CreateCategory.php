@@ -20,7 +20,6 @@ class CreateCategory extends Command
 
     private array $loggableFields = ['id', 'name'];
 
-
     public function __construct()
     {
         parent::__construct();
@@ -33,6 +32,7 @@ class CreateCategory extends Command
         if ($validator->fails())
         {
             $this->logErrors("error creating category: data not valid", $validator->errors()->all());
+
             return -1;
         }
 
@@ -40,6 +40,7 @@ class CreateCategory extends Command
 
         $this->info("category successfully created");
         $this->logModel($category);
+
         return 0;
     }
 }

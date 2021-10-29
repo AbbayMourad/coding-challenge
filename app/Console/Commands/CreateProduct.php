@@ -33,6 +33,7 @@ class CreateProduct extends Command
         $productImage = $this->getProductImage($productData['image-path']);
         if (!$productImage) {
             $this->error('image not found');
+
             return -1;
         }
         $productData['image'] = $productImage;
@@ -41,6 +42,7 @@ class CreateProduct extends Command
         $validator = Validator::make($data, StoreProductRequest::rules());
         if ($validator->fails()) {
             $this->logErrors('error creating product', $validator->errors()->all());
+
             return -1;
         }
         $productData['image'] = base64_encode($productImage->getContent());
@@ -48,6 +50,7 @@ class CreateProduct extends Command
         $product = $productService->create($productData, $categoriesNames);
         $this->info("product successfully created");
         $this->logModel($product);
+
         return 0;
     }
 
@@ -57,18 +60,23 @@ class CreateProduct extends Command
         $productData['price'] = $this->ask('product price');
         $productData['image-path'] = $this->ask('product image path');
         $productData['description'] = $this->ask('product description (optional)');
+
         return $productData;
     }
 
     private function getCategoriesNames() {
         $categoriesNames = $this->ask('product categories (category1,category2,....)') ?? '';
+
         return preg_split("/,\s*/", $categoriesNames, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     private function getProductImage($imagePath): ?UploadedFile
     {
         $local = Storage::disk('local');
-        if (!$local->exists($imagePath))    return null;
+        if (!$local->exists($imagePath)) {
+            return null;
+        }
+
         return FileCreator::fromString($local->get($imagePath));
     }
 }

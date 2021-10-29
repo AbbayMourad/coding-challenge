@@ -21,6 +21,7 @@ class DeleteProduct extends Command
         $id = $this->argument('id');
         $productService->delete($id);
         $this->info("product deleted successfully");
+
         return 0;
     }
 }

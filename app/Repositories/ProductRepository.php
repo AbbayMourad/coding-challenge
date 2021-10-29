@@ -34,7 +34,7 @@ class ProductRepository extends Repository
         return DB::table($this->table)->where($conditions)->first();
     }
 
-    public function getMany($categoryName, array $sortOptions)
+    public function getMany(?string $categoryName, array $sortOptions)
     {
         $query = DB::table($this->table);
         if ($categoryName) {
@@ -43,8 +43,12 @@ class ProductRepository extends Repository
                 ->join('categories', 'categories.id', '=', 'category_id')
                 ->where('categories.name', '=', $categoryName);
         }
+
         $sortOptions = $this->filterSortOptions($sortOptions);
-        foreach ($sortOptions as $field => $order)   $query->orderBy($field, $order);
+        foreach ($sortOptions as $field => $order) {
+            $query->orderBy($field, $order);
+        }
+
         return $query->paginate($this->perPage, 'products.*');
     }
 

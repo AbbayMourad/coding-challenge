@@ -22,12 +22,14 @@ class ProductController extends Controller
         $productData = $input['product'];
         $categoriesNames = $input['categories'];
         $product = $this->productService->create($productData, $categoriesNames);
+
         return new ProductResource($product);
     }
 
     public function destroy(Request $request)
     {
         $id = $request->route('product');
+
         return $this->productService->delete(['id' => $id]);
     }
 
@@ -37,6 +39,7 @@ class ProductController extends Controller
         $categoryName = $query['category'] ?? null;
         $sortOptions = $query['sort'] ?? [];
         $products = $this->productService->getMany($categoryName, $sortOptions);
+
         return ProductResource::collection($products);
     }
 }
