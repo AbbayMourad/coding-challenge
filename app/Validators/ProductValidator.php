@@ -7,11 +7,11 @@ use Illuminate\Validation\Factory;
 
 class ProductValidator
 {
-    private Factory $validationFactory;
+    private Factory $validator;
 
-    public function __construct(Factory $validationFactory)
+    public function __construct(Factory $validator)
     {
-        $this->validationFactory = $validationFactory;
+        $this->validator = $validator;
     }
 
     private function preValidation(array &$data)
@@ -29,7 +29,7 @@ class ProductValidator
     public function validate(array $data) {
         $this->preValidation($data);
 
-        $this->validationFactory->validate($data, $this->rules());
+        $this->validator->validate($data, $this->rules());
 
         $this->postValidation($data);
     }
@@ -39,7 +39,8 @@ class ProductValidator
             'name' => 'required|max:50|regex:/^[a-z0-9- ]*$/i',
             'description' => 'nullable|max:255|regex:/^[a-z0-9-\' ]*$/i',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|file|image|max:1024'
+            'image' => 'required|file|image|max:1024',
+            'categories_ids' => 'nullable|array|exists:categories,id'
         ];
     }
 }
