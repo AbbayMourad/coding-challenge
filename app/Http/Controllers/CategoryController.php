@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CategoryController extends Controller
 {
@@ -16,7 +17,7 @@ class CategoryController extends Controller
         $this->categoryService = $categoryService;
     }
 
-    public function store(Request $request)
+    public function store(Request $request): CategoryResource
     {
         $categoryData = $request->input("category");
         $category = $this->categoryService->create($categoryData);
@@ -24,14 +25,14 @@ class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request): int
     {
         $id = $request->route('category');
 
         return $this->categoryService->delete($id);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
         $categories = $this->categoryService->getMany();
 

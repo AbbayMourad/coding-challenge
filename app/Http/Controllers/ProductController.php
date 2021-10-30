@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -16,16 +15,15 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function store(Request $request)
+    public function store(Request $request): ProductResource
     {
-        $input = $request->input();
-        $productData = $input['product'];
+        $productData = $request->input('product', []);
         $product = $this->productService->create($productData);
 
         return new ProductResource($product);
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request): int
     {
         $id = $request->route('product');
 
@@ -34,9 +32,8 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $query = $request->query();
-        $categoryName = $query['category'] ?? null;
-        $sortOptions = $query['sort'] ?? [];
+        $categoryName = $request->query('category');
+        $sortOptions = $request->query('sort', []);
         return $products = $this->productService->getManyByCategory($categoryName, $sortOptions);
 
 //        return ProductResource::collection($products);
