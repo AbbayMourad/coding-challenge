@@ -21,7 +21,7 @@ abstract class Service
 
     public function delete($id): int
     {
-        if (!is_int($id)) {
+        if (!is_numeric($id)) {
             return 0;
         }
 
