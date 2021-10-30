@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Validators\CategoryValidator;
 
-class CategoryService
+class CategoryService extends Service
 {
     private CategoryValidator $categoryValidator;
 
@@ -13,28 +14,20 @@ class CategoryService
 
     public function __construct(CategoryValidator $categoryValidator, CategoryRepository $categoryRepository)
     {
+        parent::__construct($categoryRepository);
         $this->categoryValidator = $categoryValidator;
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function create(array $categoryData)
+    public function create(array $categoryData): Category
     {
         $this->categoryValidator->validate($categoryData);
 
         return $this->categoryRepository->create($categoryData);
     }
 
-    public function getMany(array $conditions = [])
+    public function get(array $condition = []): Category
     {
-        return $this->categoryRepository->getMany($conditions);
-    }
-
-    public function getManyByIds(array $ids) {
-        return $this->categoryRepository->getManyByIds($ids);
-    }
-
-    public function delete($id)
-    {
-        return $this->categoryRepository->delete($id);
+        return $this->categoryRepository->get($condition);
     }
 }

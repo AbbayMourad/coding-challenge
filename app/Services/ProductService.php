@@ -3,13 +3,11 @@
 namespace App\Services;
 
 use App\Models\Product;
-use App\Repositories\CategoryProductRepository;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-class ProductService
+class ProductService extends Service
 {
     private ProductValidator $productValidator;
 
@@ -17,17 +15,22 @@ class ProductService
 
     private CategoryProductService $categoryProductService;
 
+    private CategoryService $categoryService;
+
     public function __construct(
         ProductValidator $productValidator,
         ProductRepository $productRepository,
-        CategoryProductService $categoryProductService
+        CategoryProductService $categoryProductService,
+        CategoryService $categoryService
     ) {
+        parent::__construct($productRepository);
         $this->productValidator = $productValidator;
         $this->productRepository = $productRepository;
         $this->categoryProductService = $categoryProductService;
+        $this->categoryService = $categoryService;
     }
 
-    public function create(array $productData)
+    public function create(array $productData): Product
     {
         $this->productValidator->validate($productData);
         $product = $this->productRepository->create($productData);
@@ -38,17 +41,16 @@ class ProductService
         return $product;
     }
 
-    public function getManyByCategory(?string $categoryName, array $sortOptions)
+    public function getManyByCategory(?string $categoryName, array $sortOptions): ?LengthAwarePaginator
     {
         if (!$categoryName) {
             return $this->productRepository->getMany([], $sortOptions);
         }
+        $category = $this->categoryService->get(['name' => $categoryName]);
+        if (!$category) {
+            return null;
+        }
 
-        return $this->productRepository->getManyByCategory($categoryName, $sortOptions);
-    }
-
-    public function delete($id)
-    {
-        return $this->productRepository->delete($id);
+        return $this->productRepository->getManyByCategory($category, $sortOptions);
     }
 }
