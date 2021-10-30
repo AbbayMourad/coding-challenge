@@ -20,8 +20,7 @@ class ProductController extends Controller
     {
         $input = $request->input();
         $productData = $input['product'];
-        $categoriesNames = $input['categories'];
-        $product = $this->productService->create($productData, $categoriesNames);
+        $product = $this->productService->create($productData);
 
         return new ProductResource($product);
     }
@@ -30,7 +29,7 @@ class ProductController extends Controller
     {
         $id = $request->route('product');
 
-        return $this->productService->delete(['id' => $id]);
+        return $this->productService->delete($id);
     }
 
     public function index(Request $request)
@@ -38,8 +37,8 @@ class ProductController extends Controller
         $query = $request->query();
         $categoryName = $query['category'] ?? null;
         $sortOptions = $query['sort'] ?? [];
-        $products = $this->productService->getMany($categoryName, $sortOptions);
+        return $products = $this->productService->getManyByCategory($categoryName, $sortOptions);
 
-        return ProductResource::collection($products);
+//        return ProductResource::collection($products);
     }
 }

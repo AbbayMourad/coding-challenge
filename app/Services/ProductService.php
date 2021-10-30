@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Repositories\CategoryProductRepository;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Illuminate\Support\Collection;
@@ -14,31 +15,36 @@ class ProductService
 
     private ProductRepository $productRepository;
 
-    private CategoryService $categoryService;
+    private CategoryProductService $categoryProductService;
 
     public function __construct(
         ProductValidator $productValidator,
         ProductRepository $productRepository,
-        CategoryService $categoryService
+        CategoryProductService $categoryProductService
     ) {
         $this->productValidator = $productValidator;
         $this->productRepository = $productRepository;
-        $this->categoryService = $categoryService;
+        $this->categoryProductService = $categoryProductService;
     }
 
-    public function create(array $productData, array $categoriesNames)
+    public function create(array $productData)
     {
         $this->productValidator->validate($productData);
+        $product = $this->productRepository->create($productData);
 
-        $categoriesData = array_map(function ($name) { return ['name' => $name]; }, $categoriesNames);
-        $categories = $this->categoryService->createMany($categoriesData);
+        $categoriesIds = $productData['categories_ids'];
+        $this->categoryProductService->join($product, $categoriesIds);
 
-        return $this->productRepository->create($productData, $categories);
+        return $product;
     }
 
-    public function getMany($categoryName, array $sortOptions)
+    public function getManyByCategory(?string $categoryName, array $sortOptions)
     {
-        return $this->productRepository->getMany($categoryName, $sortOptions);
+        if (!$categoryName) {
+            return $this->productRepository->getMany([], $sortOptions);
+        }
+
+        return $this->productRepository->getManyByCategory($categoryName, $sortOptions);
     }
 
     public function delete($id)
