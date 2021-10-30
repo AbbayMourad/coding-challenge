@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -13,12 +14,9 @@ class ProductRepository extends Repository
 
     protected int $perPage = 5;
 
-    private CategoryRepository $categoryRepository;
-
-    public function __construct(CategoryRepository $categoryRepository)
+    public function __construct()
     {
         parent::__construct('Product');
-        $this->categoryRepository = $categoryRepository;
     }
 
     public function create(array $productData): Product
@@ -33,12 +31,8 @@ class ProductRepository extends Repository
         return Product::where($conditions)->first();
     }
 
-    public function getManyByCategory(string $categoryName, array $sortOptions): ?LengthAwarePaginator
+    public function getManyByCategory(Category $category, array $sortOptions): ?LengthAwarePaginator
     {
-        $category = $this->categoryRepository->get(['name' => $categoryName]);
-        if (!$category) {
-            return null;
-        }
         $products = $category->products();
         $sortOptions = $this->filterSortOptions($sortOptions);
         $this->orderBy($products, $sortOptions);

@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 abstract class Repository
@@ -31,12 +31,13 @@ abstract class Repository
         return $this->modelName::whereIn('id', $ids)->get();
     }
 
-    public function delete($id)
+    public function delete(int $id): int
     {
         return $this->modelName::destroy($id);
     }
 
-    protected function orderBy($query, array $sortOptions) {
+    protected function orderBy($query, array $sortOptions)
+    {
         foreach ($sortOptions as $field => $order) {
             $query->orderBy($field, $order);
         }
