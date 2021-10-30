@@ -2,58 +2,47 @@
 
 namespace App\Repositories;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductRepository extends Repository
 {
-    private string $table = 'products';
-
     protected array $allowedFields = ['name', 'description', 'price', 'image'];
 
     protected array $sortableFields = ['name', 'price'];
 
-    private int $perPage = 5;
+    protected int $perPage = 5;
 
-    public function create(array $productData, array $categories)
+    private CategoryRepository $categoryRepository;
+
+    public function __construct(CategoryRepository $categoryRepository)
+    {
+        parent::__construct('Product');
+        $this->categoryRepository = $categoryRepository;
+    }
+
+    public function create(array $productData): Product
     {
         $productData = $this->filterData($productData);
-        $id = DB::table($this->table)->insertGetId($productData);
 
-        $association = [];
-        foreach ($categories as $category) {
-            array_push($association, ['category_id' => $category->id, 'product_id' => $id]);
-        }
-        DB::table('category_product')->insert($association);
-
-        return $this->get(['id' => $id]);
+        return Product::create($productData);
     }
 
-    public function get(array $conditions)
+    public function get(array $conditions): ?Product
     {
-        return DB::table($this->table)->where($conditions)->first();
+        return Product::where($conditions)->first();
     }
 
-    public function getMany(?string $categoryName, array $sortOptions)
+    public function getManyByCategory(string $categoryName, array $sortOptions): ?LengthAwarePaginator
     {
-        $query = DB::table($this->table);
-        if ($categoryName) {
-            $query
-                ->join('category_product', 'products.id', '=', 'product_id')
-                ->join('categories', 'categories.id', '=', 'category_id')
-                ->where('categories.name', '=', $categoryName);
+        $category = $this->categoryRepository->get(['name' => $categoryName]);
+        if (!$category) {
+            return null;
         }
-
+        $products = $category->products();
         $sortOptions = $this->filterSortOptions($sortOptions);
-        foreach ($sortOptions as $field => $order) {
-            $query->orderBy($field, $order);
-        }
+        $this->orderBy($products, $sortOptions);
 
-        return $query->paginate($this->perPage, 'products.*');
-    }
-
-    public function delete($id)
-    {
-        return DB::table($this->table)->delete(['id' => $id]);
+        return $products->paginate($this->perPage);
     }
 }
