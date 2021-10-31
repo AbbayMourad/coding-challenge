@@ -19,8 +19,10 @@ abstract class Service
         return $this->repository->getMany($conditions, $sortOptions);
     }
 
-    public function delete($id): int
+    public function delete($id): array
     {
-        return $this->repository->delete($id);
+        $deletedCount = $this->repository->delete($id);
+
+        return ['deleted_count' => $deletedCount];
     }
 }

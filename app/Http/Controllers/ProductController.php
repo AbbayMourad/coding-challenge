@@ -24,7 +24,7 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    public function destroy(Request $request): int
+    public function destroy(Request $request): array
     {
         $id = $request->route('product');
 

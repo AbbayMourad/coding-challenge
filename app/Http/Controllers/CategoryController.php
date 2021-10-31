@@ -25,7 +25,7 @@ class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
-    public function destroy(Request $request): int
+    public function destroy(Request $request): array
     {
         $id = $request->route('category');
 
