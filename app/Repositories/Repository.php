@@ -31,7 +31,7 @@ abstract class Repository
         return $this->modelName::whereIn('id', $ids)->get();
     }
 
-    public function delete(int $id): int
+    public function delete($id): int
     {
         return $this->modelName::destroy($id);
     }

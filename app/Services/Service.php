@@ -21,10 +21,6 @@ abstract class Service
 
     public function delete($id): int
     {
-        if (!is_numeric($id)) {
-            return 0;
-        }
-
         return $this->repository->delete($id);
     }
 }
