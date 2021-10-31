@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CategoryNotFoundException;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -30,12 +31,18 @@ class ProductController extends Controller
         return $this->productService->delete($id);
     }
 
+    /**
+     * @throws CategoryNotFoundException
+     */
     public function index(Request $request)
     {
         $categoryName = $request->query('category');
         $sortOptions = $request->query('sort', []);
-        return $products = $this->productService->getManyByCategory($categoryName, $sortOptions);
+        $products = $this->productService->getManyByCategory($categoryName, $sortOptions);
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'no product found'], 404);
+        }
 
-//        return ProductResource::collection($products);
+        return ProductResource::collection($products);
     }
 }
