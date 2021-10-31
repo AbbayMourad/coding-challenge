@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\CategoryNotFoundException;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
@@ -41,6 +42,9 @@ class ProductService extends Service
         return $product;
     }
 
+    /**
+     * @throws CategoryNotFoundException
+     */
     public function getManyByCategory(?string $categoryName, array $sortOptions): ?LengthAwarePaginator
     {
         if (!$categoryName) {
@@ -48,7 +52,7 @@ class ProductService extends Service
         }
         $category = $this->categoryService->get(['name' => $categoryName]);
         if (!$category) {
-            return null;
+            throw new CategoryNotFoundException('category not found');
         }
 
         return $this->productRepository->getManyByCategory($category, $sortOptions);
