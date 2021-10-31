@@ -26,7 +26,7 @@ class CategoryService extends Service
         return $this->categoryRepository->create($categoryData);
     }
 
-    public function get(array $condition = []): Category
+    public function get(array $condition = []): ?Category
     {
         return $this->categoryRepository->get($condition);
     }
