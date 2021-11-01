@@ -16,11 +16,11 @@ class DeleteProduct extends Command
         parent::__construct();
     }
 
-    public function handle(ProductService $productService)
+    public function handle(ProductService $productService): int
     {
         $id = $this->argument('id');
-        $productService->delete($id);
-        $this->info("product deleted successfully");
+        $result = $productService->delete($id);
+        $this->info($result['deleted_count']." product has been deleted");
 
         return 0;
     }

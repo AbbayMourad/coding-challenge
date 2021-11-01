@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Requests\StoreProductRequest;
 use App\Services\ProductService;
 use App\Traits\CommandLogger;
 use App\Utils\FileCreator;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CreateProduct extends Command
 {
@@ -21,62 +21,60 @@ class CreateProduct extends Command
 
     private array $loggableFields = ['id', 'name', 'price', 'description'];
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    public function handle(ProductService $productService)
+    public function handle(ProductService $productService): int
     {
         $productData = $this->getProductData();
-        $categoriesNames = $this->getCategoriesNames();
+
         $productImage = $this->getProductImage($productData['image-path']);
         if (!$productImage) {
             $this->error('image not found');
 
             return -1;
         }
-        $productData['image'] = $productImage;
+        $productData['image'] = base64_encode($productImage->getContent());
 
-        $data = ['product' => $productData, 'categories' => $categoriesNames];
-        $validator = Validator::make($data, StoreProductRequest::rules());
-        if ($validator->fails()) {
-            $this->logErrors('error creating product', $validator->errors()->all());
+        try {
+            $product = $productService->create($productData);
+            $this->info("product successfully created");
+            $this->logModel($product);
+
+            return 0;
+        } catch (ValidationException $e) {
+            $this->logErrors('error creating product', $e->errors());
 
             return -1;
         }
-        $productData['image'] = base64_encode($productImage->getContent());
-
-        $product = $productService->create($productData, $categoriesNames);
-        $this->info("product successfully created");
-        $this->logModel($product);
-
-        return 0;
     }
 
-    private function getProductData() {
+    private function getProductData(): array
+    {
         $productData = [];
         $productData['name'] = $this->ask('product name');
         $productData['price'] = $this->ask('product price');
-        $productData['image-path'] = $this->ask('product image path');
+        $productData['image-path'] = $this->ask('product image path (relative to /home/mourad)');
         $productData['description'] = $this->ask('product description (optional)');
+        $productData['categories_ids'] = $this->getCategoriesIds();
 
         return $productData;
     }
 
-    private function getCategoriesNames() {
-        $categoriesNames = $this->ask('product categories (category1,category2,....)') ?? '';
+    private function getCategoriesIds(): array
+    {
+        $categoriesIds = $this->ask('product categories ids (id1,id2,....)') ?? '';
 
-        return preg_split("/,\s*/", $categoriesNames, -1, PREG_SPLIT_NO_EMPTY);
+        return preg_split("#,\s*#", $categoriesIds, -1, PREG_SPLIT_NO_EMPTY);
     }
 
-    private function getProductImage($imagePath): ?UploadedFile
+
+    private function getProductImage(?string $imagePath): ?UploadedFile
     {
         $local = Storage::disk('local');
-        if (!$local->exists($imagePath)) {
+        try {
+            $fileData = $local->get($imagePath);
+
+            return FileCreator::fromString($fileData);
+        } catch (FileNotFoundException $e) {
             return null;
         }
-
-        return FileCreator::fromString($local->get($imagePath));
     }
 }
