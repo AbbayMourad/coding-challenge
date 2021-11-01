@@ -26,12 +26,7 @@ class ProductRepository extends Repository
         return Product::create($productData);
     }
 
-    public function get(array $conditions): ?Product
-    {
-        return Product::where($conditions)->first();
-    }
-
-    public function getManyByCategory(Category $category, array $sortOptions): ?LengthAwarePaginator
+    public function getManyByCategory(Category $category, array $sortOptions): LengthAwarePaginator
     {
         $products = $category->products();
         $sortOptions = $this->filterSortOptions($sortOptions);

@@ -45,7 +45,7 @@ class ProductService extends Service
     /**
      * @throws CategoryNotFoundException
      */
-    public function getManyByCategory(?string $categoryName, array $sortOptions): ?LengthAwarePaginator
+    public function getManyByCategory(?string $categoryName, array $sortOptions): LengthAwarePaginator
     {
         if (!$categoryName) {
             return $this->productRepository->getMany([], $sortOptions);

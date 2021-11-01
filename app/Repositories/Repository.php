@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 abstract class Repository
@@ -26,16 +26,17 @@ abstract class Repository
         return $query->paginate($this->perPage ?? $this->defaultPerPage);
     }
 
-    public function getManyByIds(array $ids): Collection
-    {
-        return $this->modelName::whereIn('id', $ids)->get();
-    }
-
+    /**
+     * @return int the number of deleted models, in this case 0 or 1
+     */
     public function delete($id): int
     {
         return $this->modelName::destroy($id);
     }
 
+    /**
+     * @param Builder|Relation $query
+     */
     protected function orderBy($query, array $sortOptions)
     {
         foreach ($sortOptions as $field => $order) {
@@ -43,7 +44,7 @@ abstract class Repository
         }
     }
 
-    protected function isAllowedField($field): bool
+    protected function isAllowedField(string $field): bool
     {
         return in_array($field, $this->allowedFields);
     }
@@ -57,12 +58,12 @@ abstract class Repository
         return array_filter($data, $isAllowedField, ARRAY_FILTER_USE_KEY);
     }
 
-    protected function isSortableField($field): bool
+    protected function isSortableField(string $field): bool
     {
         return in_array($field, $this->sortableFields);
     }
 
-    protected function filterSortOptions($sortOptions): array
+    protected function filterSortOptions(array $sortOptions): array
     {
         $isSortableField = function ($field) {
             return $this->isSortableField($field);
