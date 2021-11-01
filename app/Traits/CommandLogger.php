@@ -2,21 +2,26 @@
 
 namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Model;
+
 trait CommandLogger
 {
     private function logErrors(string $info, Iterable $errors)
     {
-        $this->info($info);
+        $this->line($info);
         foreach ($errors as $error) {
-            $this->error($error);
+            $this->error($error[0]);
         }
     }
 
-    private function modelToString($model)
+    private function modelToString(Model $model): string
     {
         $out = [];
         foreach ($this->loggableFields as $field) {
-            array_push($out, $field."=".$model->$field);
+            $value = $model->$field;
+            if ($value) {
+                array_push($out, $field . "=" . $model->$field);
+            }
         }
 
         return join(", ", $out);
