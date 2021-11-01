@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Validators\CategoryValidator;
+use Illuminate\Validation\ValidationException;
 
 class CategoryService extends Service
 {
@@ -19,6 +20,9 @@ class CategoryService extends Service
         $this->categoryRepository = $categoryRepository;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function create(array $categoryData): Category
     {
         $this->categoryValidator->validate($categoryData);

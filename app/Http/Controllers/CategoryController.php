@@ -6,6 +6,7 @@ use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
 {
@@ -16,6 +17,9 @@ class CategoryController extends Controller
         $this->categoryService = $categoryService;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function store(Request $request): CategoryResource
     {
         $categoryData = $request->input("category");

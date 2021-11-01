@@ -6,6 +6,7 @@ use App\Exceptions\CategoryNotFoundException;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -16,6 +17,9 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function store(Request $request): ProductResource
     {
         $productData = $request->input('product', []);

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
 
 class ProductService extends Service
 {
@@ -31,6 +32,9 @@ class ProductService extends Service
         $this->categoryService = $categoryService;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function create(array $productData): Product
     {
         $this->productValidator->validate($productData);

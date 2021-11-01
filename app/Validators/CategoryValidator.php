@@ -3,6 +3,7 @@
 namespace App\Validators;
 
 use Illuminate\Validation\Factory;
+use Illuminate\Validation\ValidationException;
 
 class CategoryValidator
 {
@@ -13,6 +14,9 @@ class CategoryValidator
         $this->validator = $validator;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function validate(array $data) {
         $this->validator->validate($data, $this->rules());
     }

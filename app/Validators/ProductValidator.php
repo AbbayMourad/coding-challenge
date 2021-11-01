@@ -4,6 +4,7 @@ namespace App\Validators;
 
 use App\Utils\FileCreator;
 use Illuminate\Validation\Factory;
+use Illuminate\Validation\ValidationException;
 
 class ProductValidator
 {
@@ -26,6 +27,9 @@ class ProductValidator
         unset($data['base64Image']);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function validate(array $data) {
         $this->preValidation($data);
 

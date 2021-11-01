@@ -19,6 +19,7 @@ abstract class Service
         return $this->repository->getMany($conditions, $sortOptions);
     }
 
+
     public function delete($id): array
     {
         $deletedCount = $this->repository->delete($id);
