@@ -11,16 +11,11 @@ class DeleteCategory extends Command
 
     protected $description = 'Delete a category';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    public function handle(CategoryService $categoryService)
+    public function handle(CategoryService $categoryService): int
     {
         $id = $this->argument("id");
-        $categoryService->delete($id);
-        $this->info("category deleted successfully");
+        $result = $categoryService->delete($id);
+        $this->info($result['deleted_count']." category has been deleted");
 
         return 0;
     }
